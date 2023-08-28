@@ -14,16 +14,16 @@ import axios from 'axios';
 // Create the rootSaga generator function
 function* rootSaga() {
     yield takeEvery('FETCH_MOVIES', fetchAllMovies);
-    yield takeLatest('SPECIFIC_MOVIE', getSpecific);
+    // yield takeLatest('SPECIFIC_MOVIE', getSpecific);
 }
 
-function* getSpecific(){
-    try{
-        const specific = yield axios.get(`/api/movie/specific/${id}`)
-    }catch{
-        console.log('error with the getSpecific')
-    }
-}
+// function* getSpecific(){
+//     try{
+//         const specific = yield axios.get(`/api/movie/specific/${action.payload}`)
+//     }catch{
+//         console.log('error with the getSpecific')
+//     }
+// }
 
 
 
@@ -38,6 +38,21 @@ function* fetchAllMovies() {
         console.log('get all error');
     }
         
+}
+
+const specific = (state = [],  action) => {
+    if(action.type === 'SPECIFIC_MOVIE'){
+        console.log('action  is:', action.payload)
+        axios.get(`/api/movie/specific/${action.payload}`)
+            .then(result  => {
+               console.log('result:',result.data);
+                let movie = result.data;
+                return [...state, movie]
+            }).catch(error => {
+               console.log('error with the specific:', error)
+            })
+    }
+    return  state;
 }
 
 
@@ -69,6 +84,7 @@ const storeInstance = createStore(
     combineReducers({
         movies,
         genres,
+        specific
     }),
     // Add sagaMiddleware to our store
     applyMiddleware(sagaMiddleware, logger),
