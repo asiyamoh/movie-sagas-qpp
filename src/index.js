@@ -8,13 +8,24 @@ import { Provider } from 'react-redux';
 import logger from 'redux-logger';
 // Import saga middleware
 import createSagaMiddleware from 'redux-saga';
-import { takeEvery, put } from 'redux-saga/effects';
+import { takeEvery, put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
 
 // Create the rootSaga generator function
 function* rootSaga() {
     yield takeEvery('FETCH_MOVIES', fetchAllMovies);
+    yield takeLatest('SPECIFIC_MOVIE', getSpecific);
 }
+
+function* getSpecific(){
+    try{
+        const specific = yield axios.get(`/api/movie/specific/${id}`)
+    }catch{
+        console.log('error with the getSpecific')
+    }
+}
+
+
 
 function* fetchAllMovies() {
     // get all movies from the DB
@@ -28,6 +39,7 @@ function* fetchAllMovies() {
     }
         
 }
+
 
 // Create sagaMiddleware
 const sagaMiddleware = createSagaMiddleware();
