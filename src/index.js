@@ -14,16 +14,18 @@ import axios from 'axios';
 // Create the rootSaga generator function
 function* rootSaga() {
     yield takeEvery('FETCH_MOVIES', fetchAllMovies);
-    // yield takeLatest('SPECIFIC_MOVIE', getSpecific);
+    yield takeLatest('SPECIFIC_MOVIE', getSpecific);
 }
 
-// function* getSpecific(){
-//     try{
-//         const specific = yield axios.get(`/api/movie/specific/${action.payload}`)
-//     }catch{
-//         console.log('error with the getSpecific')
-//     }
-// }
+function* getSpecific(action) {
+    try {
+        console.log('action:', action.payload)
+        const specific = yield axios.get(`/api/movie/specific/${action.payload}`)
+        yield put({ type: 'ONE_MOVIE', payload: specific.data })
+    } catch {
+        console.log('error with the getSpecific')
+    }
+}
 
 
 
@@ -37,22 +39,15 @@ function* fetchAllMovies() {
     } catch {
         console.log('get all error');
     }
-        
+
 }
 
-const specific = (state = [],  action) => {
-    if(action.type === 'SPECIFIC_MOVIE'){
+const specific = (state = [], action) => {
+    if (action.type === 'ONE_MOVIE') {
         console.log('action  is:', action.payload)
-        axios.get(`/api/movie/specific/${action.payload}`)
-            .then(result  => {
-               console.log('result:',result.data);
-                let movie = result.data;
-                return [...state, movie]
-            }).catch(error => {
-               console.log('error with the specific:', error)
-            })
+        return action.payload
     }
-    return  state;
+    return state;
 }
 
 
