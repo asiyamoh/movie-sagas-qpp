@@ -21,7 +21,12 @@ function* getSpecific(action) {
     try {
         console.log('action:', action.payload)
         const specific = yield axios.get(`/api/movie/specific/${action.payload}`)
-        yield put({ type: 'ONE_MOVIE', payload: specific.data })
+        const genres = yield axios.get(`/api/genre/${action.payload}`)
+        const payload = {
+            specific: specific.data,
+            genres: genres.data
+        }
+        yield put({ type: 'ONE_MOVIE', payload: payload })
     } catch {
         console.log('error with the getSpecific')
     }
